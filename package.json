@@ -1,0 +1,28 @@
+{
+  "name": "inspectigate",
+  "version": "1.0.0",
+  "description": "App package inspector to check if an app is hybrid or native.",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/purplecabbage/inspectigate.git"
+  },
+  "author": "Jesse MacFadyen",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/purplecabbage/inspectigate/issues"
+  },
+  "homepage": "https://github.com/purplecabbage/inspectigate#readme",
+  "dependencies": {
+    "decompress": "^4.0.0",
+    "simple-plist": "^0.1.4",
+    "unzip": "^0.1.11"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  }
+}
