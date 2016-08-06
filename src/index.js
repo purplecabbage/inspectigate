@@ -3,18 +3,11 @@ var decompress = require('decompress');
 var path = require('path');
 var plist = require('simple-plist');
 
-
-var testFiles = ['PhoneGap 1.7.0.ipa',
-                 'Adobe Ideas 2.9.2.ipa'];
-
 var tempDir = "tmp";
 
 function analyzeFiles(files) {
 
     console.log('done! files.length = ' + files.length);
-
-    dropZone.innerText = "Analysing ...";
-
     var infoPlists = files.filter(function(file){
         return path.basename(file.path) === 'Info.plist';
     });
@@ -34,10 +27,32 @@ function analyzeFiles(files) {
 
     return {
         jsFileCount:jsFiles.length,
-        cordovaJSCount:cordovaJsFiles.length
+        cordovaJSCount:cordovaJsFiles.length,
+        displayName:plistData.CFBundleDisplayName,
+        bundleId:plistData.CFBundleIdentifier
     };
+}
 
+function processApp(path,cb) {
 
+    decompress(path,tempDir)
+    .then(function(res) {
+        return analyzeFiles(res);
+    })
+    .then(function(res) {
+        setTimeout(function(){ // delay so the UI can update
+            cb(res);
+        },0);
+    },function onError(err) {
+        setTimeout(function(){ // delay so the UI can update
+            cb(err);
+        },0);
+    });
+}
+
+function outputResults(res) {
+    window.alert("res" + res.length);
+    dropZone.innerText = "Drop an ipa file here to inspect it.";
 }
 
 function doDragOver(evt) {
@@ -52,30 +67,28 @@ function doDrop(evt) {
 
     dropZone.innerText = "Processing " + files.length + " files ..."
 
-    var fileQueue = [];
-    var resultQueue = [];
-    for (var i = 0, f; f = files[i]; i++) {
-        // Read the File objects in this FileList.
-        if(path.extname(files[i].path) === ".ipa") {
-            fileQueue.push(files[i].path);
+    var fileQueue = Array.prototype.filter.call(files,function(file) {
+        return path.extname(file.path) === ".ipa";
+    });
+
+    var results = [];
+    var totalCount = fileQueue.length;
+
+    var onResult = function(res) {
+        results.push(res);
+        doNext();
+    };
+
+    var doNext = function() {
+        if(fileQueue.length > 0) {
+            dropZone.innerText = "Processing apps ...\n" + ( results.length + 1) + " of " + totalCount;
+            processApp(fileQueue.shift().path,onResult);
         }
-    }
-    if(fileQueue.length > 0) {
-        dropZone.innerText = "Decompressing...";
-        decompress(fileQueue[0],tempDir).then(analyzeFiles,function(err){
-            window.alert("err : " + err);
-        })
-        .then(function (res) {
-            window.alert("*.js: " + res.jsFileCount + "\n" +
-                         "cordova.js: " + res.cordovaJSCount);
-        })
-        .then(function(){
-            dropZone.innerText = "Drop an ipa file here to inspect it.";
-        });;
-    }
-    else {
-        console.log("No ipa files found");
-    }
+        else {
+            outputResults(results);
+        }
+    };
+    doNext();
 }
 
 document.addEventListener("DOMContentLoaded",function(){
