@@ -1,54 +1,9 @@
 
-var decompress = require('decompress');
-var path = require('path');
-var plist = require('simple-plist');
 
-var tempDir = "tmp";
-
-function analyzeFiles(files) {
-
-    console.log('done! files.length = ' + files.length);
-    var infoPlists = files.filter(function(file){
-        return path.basename(file.path) === 'Info.plist';
-    });
-
-    var plistData = plist.readFileSync(path.join(tempDir,infoPlists[0].path));
-
-    console.log("DisplayName : " + plistData.CFBundleDisplayName);
-    console.log("BundleIdentifier : " + plistData.CFBundleIdentifier);
-
-    var jsFiles = files.filter(function(file){
-        return path.extname(file.path) === ".js";
-    });
-
-    var cordovaJsFiles = jsFiles.filter(function(file) {
-        return path.basename(file.path) === 'cordova.js';
-    });
-
-    return {
-        jsFileCount:jsFiles.length,
-        cordovaJSCount:cordovaJsFiles.length,
-        displayName:plistData.CFBundleDisplayName,
-        bundleId:plistData.CFBundleIdentifier
-    };
-}
-
-function processApp(path,cb) {
-
-    decompress(path,tempDir)
-    .then(function(res) {
-        return analyzeFiles(res);
-    })
-    .then(function(res) {
-        setTimeout(function(){ // delay so the UI can update
-            cb(res);
-        },0);
-    },function onError(err) {
-        setTimeout(function(){ // delay so the UI can update
-            cb(err);
-        },0);
-    });
-}
+const path = require('path');
+const BrowserWindow = require('electron').remote.BrowserWindow;
+const ipcRenderer = require('electron').ipcRenderer;
+let myWindowId;
 
 function outputResults(res) {
     window.alert("res" + res.length);
@@ -71,29 +26,28 @@ function doDrop(evt) {
         return path.extname(file.path) === ".ipa";
     });
 
-    var results = [];
-    var totalCount = fileQueue.length;
+    const workerPath = 'file://' + path.join(__dirname, '/worker.html');
 
-    var onResult = function(res) {
-        results.push(res);
-        doNext();
-    };
+    let win = new BrowserWindow({ width: 400, height: 400, show: true });
+    win.loadURL(workerPath);
 
-    var doNext = function() {
-        if(fileQueue.length > 0) {
-            dropZone.innerText = "Processing apps ...\n" + ( results.length + 1) + " of " + totalCount;
-            processApp(fileQueue.shift().path,onResult);
-        }
-        else {
-            outputResults(results);
-        }
-    };
-    doNext();
+    //win.webContents.openDevTools();
+
+    win.webContents.on('did-finish-load', function () {
+        win.webContents.send('process-files', fileQueue, myWindowId);
+    });
 }
 
-document.addEventListener("DOMContentLoaded",function(){
+ipcRenderer.on('window-id',function(event,id){
+    myWindowId = id;
+})
 
+ipcRenderer.on('process-files-result', function (event, result) {
+    //window.alert("got a result " + JSON.stringify(result));
+    outputResults(result);
+})
+
+document.addEventListener("DOMContentLoaded",function(){
     dropZone.addEventListener("drop", doDrop);
     dropZone.addEventListener("dragover", doDragOver);
-
 });

@@ -7,13 +7,21 @@ const windowProps = { width: 400,
                       height: 400,
                       frame: true,
                       transparent:false,
-                      resizable:false};
+                      resizable:false,
+                      webPreferences: {
+                        nodeIntegration: true
+                      }
+};
 
 let mainWindow;
 
 function createWindow () {
-  mainWindow = new electron.BrowserWindow(windowProps)
-  mainWindow.loadURL(`file://${__dirname}/index.html`)
+  mainWindow = new electron.BrowserWindow(windowProps);
+
+  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.webContents.on('did-finish-load', function () {
+      mainWindow.webContents.send('window-id',mainWindow.id);
+  });
   mainWindow.on('closed', function () {
     mainWindow = null;
   })
