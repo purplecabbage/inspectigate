@@ -16,34 +16,51 @@ function doDragOver(evt) {
 }
 
 function doDrop(evt) {
-
     evt.preventDefault();
     var files = evt.dataTransfer.files;
-
-    dropZone.innerText = "Processing " + files.length + " files ..."
-
-    var fileQueue = Array.prototype.filter.call(files,function(file) {
-        return path.extname(file.path) === ".ipa";
-    });
-
-    const workerPath = 'file://' + path.join(__dirname, '/worker.html');
-
-    let win = new BrowserWindow({ width: 400, height: 400, show: true });
-    win.loadURL(workerPath);
-
-    //win.webContents.openDevTools();
-
-    win.webContents.on('did-finish-load', function () {
-        win.webContents.send('process-files', fileQueue, myWindowId);
-    });
+    processFiles(files);
 }
+
+function processFiles(files) {
+
+    var isIPA = function(file) {
+        return path.extname(file.path ? file.path : file) === ".ipa";
+    };
+    var fileQueue;
+    if(files.filter) {
+        fileQueue = files.filter(isIPA);
+    }
+    else {
+       fileQueue = Array.prototype.filter.call(files,isIPA);
+    }
+
+
+    if(fileQueue.length > 0) {
+        dropZone.innerText = "Processing " + fileQueue.length + " files ...";
+        const workerPath = 'file://' + path.join(__dirname, '/worker.html');
+
+        let win = new BrowserWindow({ width: 400, height: 400, show: false });
+        win.loadURL(workerPath);
+
+        win.webContents.on('did-finish-load', function () {
+            win.webContents.send('process-files', fileQueue, myWindowId);
+        });
+    }
+    else {
+        window.alert("oops, none of the files were .ipa files.")
+    }
+}
+
+ipcRenderer.on('file-menu',function(event,files){
+    window.alert("got files");
+    processFiles(files);
+})
 
 ipcRenderer.on('window-id',function(event,id){
     myWindowId = id;
 })
 
 ipcRenderer.on('process-files-result', function (event, result) {
-    //window.alert("got a result " + JSON.stringify(result));
     outputResults(result);
 })
 

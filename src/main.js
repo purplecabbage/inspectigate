@@ -2,6 +2,7 @@
 
 const electron = require('electron');
 const app = electron.app;
+const Menu = electron.Menu;
 
 const windowProps = { width: 400,
                       height: 400,
@@ -14,6 +15,65 @@ const windowProps = { width: 400,
 };
 
 let mainWindow;
+let template = [
+  {
+      label: 'File',
+      submenu: [{
+          label: 'Open...',
+          accelerator: 'CmdOrCtrl+O',
+          click: function (item, focusedWindow) {
+              var fileList = electron.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']});
+              console.log("fileList = " + fileList.length);
+              mainWindow.webContents.send('file-menu',fileList);
+          }
+  }]},
+  {
+    label:"View",
+    role:"view",
+    submenu:[{
+	      label: 'Toggle Developer Tools',
+        accelerator: (function () {
+            if (process.platform === 'darwin') {
+              return 'Alt+Command+I'
+            }
+            else {
+              return 'Ctrl+Shift+I'
+            }
+        })(),
+        click: function (item, focusedWindow) {
+            if (focusedWindow) {
+                focusedWindow.toggleDevTools()
+            }
+        }
+    }]
+  },
+  {
+    label: 'Help',
+    role: 'help',
+    submenu: [{
+        label: 'Learn More',
+        click: function () {
+            electron.shell.openExternal('https://github.com/purplecabbage/inspectigate')
+        }
+    }]
+}];
+
+if (process.platform === 'darwin') {
+  const name = app.getName();
+  template.unshift({
+    label: name,
+    submenu: [{ role: 'about'},
+              { type: 'separator'},
+              { role: 'services', submenu: []},
+              { type: 'separator' },
+              { role: 'hide' },
+              { role: 'hideothers'},
+              { role: 'unhide'},
+              { type: 'separator'},
+              { role: 'quit'}]
+  });
+};
+
 
 function createWindow () {
   mainWindow = new electron.BrowserWindow(windowProps);
@@ -30,6 +90,8 @@ function createWindow () {
 app.on('ready', function(){
   if (!mainWindow) {
     createWindow();
+    const menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu);
   }
 });
 
