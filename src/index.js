@@ -52,12 +52,15 @@ function processFiles(files) {
 }
 
 ipcRenderer.on('file-menu',function(event,files){
-    window.alert("got files");
     processFiles(files);
 })
 
 ipcRenderer.on('window-id',function(event,id){
     myWindowId = id;
+})
+
+ipcRenderer.on('process-files-progress', function (event, index,total) {
+    dropZone.innerText = "Processing " + index + " of " + total  + " files.";
 })
 
 ipcRenderer.on('process-files-result', function (event, result) {

@@ -13,6 +13,7 @@ ipc.on('process-files', function (event, fileQueue, fromWindowId) {
     const fromWindow = BrowserWindow.fromId(fromWindowId);
     var results = [];
     var totalCount = fileQueue.length;
+    var index = 0;
 
     var onResult = function(res) {
         results.push(res);
@@ -21,6 +22,7 @@ ipc.on('process-files', function (event, fileQueue, fromWindowId) {
 
     var doNext = function() {
         if(fileQueue.length > 0) {
+            fromWindow.webContents.send('process-files-progress', ++index,totalCount);
             processApp(fileQueue.shift().path,onResult);
         }
         else {
