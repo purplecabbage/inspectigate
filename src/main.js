@@ -16,15 +16,24 @@ const windowProps = { width: 400,
 
 let mainWindow;
 let template = [
-  {
+{
       label: 'File',
       submenu: [{
           label: 'Open...',
           accelerator: 'CmdOrCtrl+O',
           click: function (item, focusedWindow) {
-              var fileList = electron.dialog.showOpenDialog({properties: ['openFile', 'openDirectory', 'multiSelections']});
-              console.log("fileList = " + fileList.length);
-              mainWindow.webContents.send('file-menu',fileList);
+              var dialogProps = {
+                                    properties: ['openFile', 'multiSelections'],
+                                    filters: [{
+                                                  name: 'iOS Apps',
+                                                  extensions: ['ipa']
+                                              }]
+                                };
+              var fileList = electron.dialog.showOpenDialog(dialogProps);
+              if(fileList) {
+                  console.log("fileList = " + fileList.length);
+                  mainWindow.webContents.send('file-menu',fileList);
+              }
           }
   }]},
   {
