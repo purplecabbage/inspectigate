@@ -1,9 +1,9 @@
 
- const ipc = require('electron').ipcRenderer;
+const ipc = require('electron').ipcRenderer;
 const BrowserWindow = require('electron').remote.BrowserWindow;
-var decompress = require('decompress');
-var path = require('path');
-var plist = require('simple-plist');
+const decompress = require('decompress');
+const path = require('path');
+const plist = require('simple-plist');
 var callerWindow;
 
 var tempDir = "tmp";
@@ -40,7 +40,19 @@ function analyzeFiles(files) {
         return path.basename(file.path) === 'Info.plist';
     });
 
+    infoPlists.sort(function(a,b){
+        return a.path.length - b.path.length;
+    });
+
+    // infoPlists.forEach(function(item){
+    //     console.log("item : " + item.path);
+    // })
+
+
+
     var plistData = plist.readFileSync(path.join(tempDir,infoPlists[0].path));
+
+    // console.log("plistData " + JSON.stringify(plistData));
 
     // console.log("DisplayName : " + plistData.CFBundleDisplayName);
     // console.log("BundleIdentifier : " + plistData.CFBundleIdentifier);
