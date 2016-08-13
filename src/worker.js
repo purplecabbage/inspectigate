@@ -73,9 +73,17 @@ function analyzeFiles(files) {
     };
 }
 
+const filteredExtents = [".js",".plist",".png"];
+function filterExtensions(file) {
+    let ext = path.extname(file.path);
+    if(filteredExtents.indexOf(ext) > -1 ) {
+        return file;
+    }
+}
+
 function processApp(path,cb) {
 
-    decompress(path,tempDir)
+    decompress(path,tempDir,{ filter: filterExtensions })
     .then(function(res) {
         return analyzeFiles(res);
     })
