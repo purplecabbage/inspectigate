@@ -69,7 +69,8 @@ function analyzeFiles(files) {
         jsFileCount:jsFiles.length,
         cordovaJSCount:cordovaJsFiles.length,
         displayName:plistData.CFBundleDisplayName,
-        bundleId:plistData.CFBundleIdentifier
+        bundleId:plistData.CFBundleIdentifier,
+        icon:plistData.CFBundleIcon
     };
 }
 
