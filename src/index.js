@@ -4,15 +4,14 @@ const path = require('path');
 const BrowserWindow = require('electron').remote.BrowserWindow;
 const ipcRenderer = require('electron').ipcRenderer;
 let myWindowId;
+let workerWindow;
 
 function outputResults(res) {
-    window.alert("res" + res.length);
-    // console.log("res = " + JSON.stringify(res[0]));
+
     var errorCount = 0;
     res.forEach(function(result) {
         if(result.code != null) {
             console.log("ERROR : " + JSON.stringify(result));
-
             // use errno?
             errorCount++;
         }
@@ -20,8 +19,6 @@ function outputResults(res) {
             //console.log("result = " + JSON.stringify(result));
         }
     });
-
-    window.alert("errors:" + errorCount);
 
     const modalPath = path.join('file://', __dirname, 'results.html')
     let win = new BrowserWindow({ frame:true })
@@ -65,12 +62,12 @@ function processFiles(files) {
     if(fileQueue.length > 0) {
         dropZone.innerText = "Processing " + fileQueue.length + " files ...";
         let workerPath = 'file://' + path.join(__dirname, '/worker.html');
-        let win = new BrowserWindow({ width: 400, height: 400, show: false });
-        win.loadURL(workerPath);
-        //win.openDevTools();
+        workerWindow = new BrowserWindow({ width: 400, height: 400, show: false });
+        workerWindow.loadURL(workerPath);
+        workerWindow.openDevTools();
 
-        win.webContents.on('did-finish-load', function () {
-            win.webContents.send('process-files', fileQueue, myWindowId);
+        workerWindow.webContents.once('did-finish-load', function () {
+            workerWindow.webContents.send('process-files', fileQueue, myWindowId);
         });
     }
     else {
@@ -92,6 +89,7 @@ ipcRenderer.on('process-files-progress', function (event, index,total) {
 
 ipcRenderer.on('process-files-result', function (event, result) {
     outputResults(result);
+    workerWindow.close();
 })
 
 document.addEventListener("DOMContentLoaded",function(){
