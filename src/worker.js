@@ -27,7 +27,6 @@ ipc.on('process-files', function (event, fileQueue, fromWindowId) {
         }
         else {
             fromWindow.webContents.send('process-files-result', results);
-            window.close();
         }
     };
     doNext();
@@ -53,7 +52,6 @@ function analyzeFiles(files) {
     var plistData = plist.readFileSync(path.join(tempDir,infoPlists[0].path));
 
     // console.log("plistData " + JSON.stringify(plistData));
-
     // console.log("DisplayName : " + plistData.CFBundleDisplayName);
     // console.log("BundleIdentifier : " + plistData.CFBundleIdentifier);
 
@@ -93,6 +91,7 @@ function processApp(path,cb) {
             cb(res);
         },0);
     },function onError(err) {
+        console.log("error " + err);
         setTimeout(function(){ // delay so the UI can update
             cb(err);
         },0);
