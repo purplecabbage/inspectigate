@@ -5,34 +5,31 @@ const BrowserWindow = require('electron').remote.BrowserWindow;
 const ipcRenderer = require('electron').ipcRenderer;
 let myWindowId;
 let workerWindow;
+let resultsWindow;
 
 function outputResults(res) {
 
     var errorCount = 0;
-    res.forEach(function(result) {
-        if(result.code != null) {
-            console.log("ERROR : " + JSON.stringify(result));
-            // use errno?
-            errorCount++;
-        }
-        else {
-            //console.log("result = " + JSON.stringify(result));
-        }
-    });
 
     const modalPath = path.join('file://', __dirname, 'results.html')
-    let win = new BrowserWindow({ frame:true })
-    win.on('close', function () {
-        win = null;
+    resultsWindow = new BrowserWindow({ frame:true })
+    resultsWindow.on('close', function () {
+        resultsWindow = null;
     });
-    win.loadURL(modalPath);
+    resultsWindow.loadURL(modalPath);
 
-    win.webContents.on('did-finish-load', function () {
-        win.webContents.send('display-results', res);
+    resultsWindow.webContents.on('did-finish-load', function () {
+        resultsWindow.webContents.send('display-results', res);
     });
-    win.show();
+    resultsWindow.show();
+    resultsWindow.on('closed', function () {
+        resultsWindow = null;
+    });
     dropZone.innerText = "Drop an ipa file here to inspect it.";
+
 }
+
+
 
 function doDragOver(evt) {
     evt.preventDefault();
@@ -64,7 +61,6 @@ function processFiles(files) {
         let workerPath = 'file://' + path.join(__dirname, '/worker.html');
         workerWindow = new BrowserWindow({ width: 400, height: 400, show: false });
         workerWindow.loadURL(workerPath);
-        workerWindow.openDevTools();
 
         workerWindow.webContents.once('did-finish-load', function () {
             workerWindow.webContents.send('process-files', fileQueue, myWindowId);
@@ -79,8 +75,29 @@ ipcRenderer.on('file-menu',function(event,files){
     processFiles(files);
 })
 
+window.onbeforeunload = (e) => {
+    if(workerWindow) {
+        workerWindow.close();
+        workerWindow = null;
+    }
+    if(resultsWindow) {
+        resultsWindow.close();
+        resultsWindow = null;
+    }
+}
+
 ipcRenderer.on('window-id',function(event,id){
     myWindowId = id;
+    window.on('closed', function () {
+        if(workerWindow) {
+            workerWindow.close();
+            workerWindow = null;
+        }
+        if(resultsWindow) {
+            resultsWindow.close();
+            resultsWindow = null;
+        }
+    });
 })
 
 ipcRenderer.on('process-files-progress', function (event, index,total) {
@@ -90,6 +107,7 @@ ipcRenderer.on('process-files-progress', function (event, index,total) {
 ipcRenderer.on('process-files-result', function (event, result) {
     outputResults(result);
     workerWindow.close();
+    workerWindow = null;
 })
 
 document.addEventListener("DOMContentLoaded",function(){

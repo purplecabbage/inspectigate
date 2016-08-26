@@ -1,0 +1,22 @@
+
+
+body {
+    background-color:#9da7b5;
+    margin:0;
+    margin-top:40px;
+    padding:0;
+    font-family: Helvetica, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+ul {
+    list-style: none;
+}
+
+li {
+    border-top:dashed 1px #333;
+    margin:10px 10px;
+}
+
+li:first-child {
+    border-top:none;
+}
