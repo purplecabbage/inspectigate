@@ -45,6 +45,10 @@ ipc.on('display-results', function (event, results) {
             div.innerText = "jsFileCount: " + result.jsFileCount;
             li.appendChild(div);
 
+            div = document.createElement("div");
+            div.innerText = "icon: " + result.icon;
+            li.appendChild(div);
+
 
             uList.appendChild(li);
         }

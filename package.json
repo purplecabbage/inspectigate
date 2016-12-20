@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-osx":"electron-packager . inspectigate --platform=darwin --ignore=tmp\\",
+    "build-osx": "electron-packager . inspectigate --platform=darwin --ignore=tmp\\",
     "start": "electron ."
   },
   "repository": {
@@ -24,7 +24,7 @@
     "unzip": "^0.1.11"
   },
   "devDependencies": {
-    "electron-packager": "^8.0.0",
-    "electron-prebuilt": "^1.2.0"
+    "electron-packager": "^8.3.0",
+    "electron-prebuilt": "^1.4.10"
   }
 }
