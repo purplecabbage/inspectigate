@@ -5,7 +5,7 @@
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-osx": "electron-packager . inspectigate --platform=darwin --ignore=tmp\\",
+    "build-osx": "electron-packager . inspectigate --out=build --platform=darwin --ignore=tmp\\",
     "start": "electron ."
   },
   "repository": {
