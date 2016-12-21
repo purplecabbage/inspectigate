@@ -13,6 +13,7 @@ deploy:
   api_key:
     secure: a2qbkejp8yldc0rgIR0gRkYl/eaMAjaT/NVEhTZ9mySJK9bGe+FkEilnGYfZNtGRDYQoBH6r8WrebBWvicXO7cNJNbLr8WUFFWRITiDOKUNI542q4SE0cnGTlRaskAahD8ikisZJ39QGyOV79lNYpMUhHoGu1EB5rWk/JWTuLLQJ4YFqzVbLuF+QdjzymSmos2mrQA8FYd0CzdYMqUOQ0K8sh58xu+dGuQaQQadKwfG2NJhe0Gv0JS7EWXGRu4Czt/jNhwm0QBI0n7MB/KcZ5YErrbqg1o9Ooycpup8fzLMQJu7TzQLU0T9OMlslBZTxOBF/UFmb0WUGD7vmrtscE5iFZtI5GlRiF65H830P+c3TKkrocOAXbsxXVxXn9St6SS2XyPXUoBIk/ZDiwnqp60/6TP7nkG6EjKF2/gclPI7xx/kO3Nbn+BZYIJhzR1Isk7sZiqTRhv0niFaqPl/E/rYP1E2T2xvxeZ5UuXrstmUQkD8FEd4AFll8/7jMYRMoTVFFgs3hqA4VGpfNByg63qx3XsteMpdBsqAsrlGou04gEAPM5LqI+Vpi3jM5jB2DSWIVm0HluV/Xs6BY+c5zXxTor4Y/g7FzlKHIrfiWlE8VJG2agWQXOL6IlE4Et4FCvp1McUhAFsBhmke/LYkhA6hr2ngyZc/r8z36YoU75hI=
   file: build/inspectigate-darwin-x64/inspectigate.app
+  skip_cleanup: true
   on:
     repo: purplecabbage/inspectigate
-    branch: releases
+    tags: true
