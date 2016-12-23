@@ -1,6 +1,6 @@
 {
   "name": "inspectigate",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "App package inspector to check if an app is hybrid or native.",
   "main": "src/main.js",
   "scripts": {
