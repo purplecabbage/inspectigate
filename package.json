@@ -1,12 +1,14 @@
 {
   "name": "inspectigate",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "App package inspector to check if an app is hybrid or native.",
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-osx": "electron-packager . inspectigate --out=build --platform=darwin --ignore=tmp\\",
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "build --dir",
+    "dist": "build"
   },
   "repository": {
     "type": "git",
@@ -18,12 +20,22 @@
     "url": "https://github.com/purplecabbage/inspectigate/issues"
   },
   "homepage": "https://github.com/purplecabbage/inspectigate#readme",
+  "build": {
+    "appId": "com.phonegap.inspectigate",
+    "mac": {
+      "category": "utility"
+    },
+    "win": {
+      "iconUrl": ""
+    }
+  },
   "dependencies": {
     "decompress": "^4.0.0",
     "simple-plist": "^0.1.4",
     "unzip": "^0.1.11"
   },
   "devDependencies": {
+    "electron-builder": "^10.9.3",
     "electron-packager": "^8.3.0",
     "electron-prebuilt": "^1.4.10"
   }
