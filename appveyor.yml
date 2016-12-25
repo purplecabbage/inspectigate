@@ -6,7 +6,9 @@ clone_depth: 2
 install:
   - npm install
 
-build:
+build: off
+
+build_script:
   - npm run dist
 
 deploy:
