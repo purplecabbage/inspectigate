@@ -10,6 +10,7 @@ build: off
 
 build_script:
   - npm run dist
+  - ls dist
 
 deploy:
     # Deploy to GitHub Releases
