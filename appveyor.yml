@@ -15,7 +15,7 @@ build_script:
 deploy:
     # Deploy to GitHub Releases
   - provider: GitHub
-    artifact: "dist/*.exe"           # upload all NuGet packages to release assets
+    artifact: "dist/inspectigate Setup 1.1.2.exe"           # upload all NuGet packages to release assets
     draft: false
     prerelease: false
 
