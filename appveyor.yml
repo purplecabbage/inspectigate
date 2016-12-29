@@ -12,10 +12,14 @@ build_script:
   - npm run dist
   - ls dist
 
+artifacts:
+  - path: dist\*.exe
+    name: win-installer
+
 deploy:
     # Deploy to GitHub Releases
   - provider: GitHub
-    artifact: "dist/inspectigate Setup 1.1.2.exe"           # upload all NuGet packages to release assets
+    artifact: win-installer
     draft: false
     prerelease: false
 
