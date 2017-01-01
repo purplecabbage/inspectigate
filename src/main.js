@@ -25,8 +25,8 @@ let template = [
               var dialogProps = {
                                     properties: ['openFile', 'multiSelections'],
                                     filters: [{
-                                                  name: 'iOS Apps',
-                                                  extensions: ['ipa']
+                                                  name: 'iOS/Android Apps',
+                                                  extensions: ['ipa','apk']
                                               }]
                                 };
               var fileList = electron.dialog.showOpenDialog(dialogProps);
