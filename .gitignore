@@ -3,6 +3,8 @@
 /.vscode/
 /tmp/
 
+/dist/
+
 .DS_Store
 
 inspectigate-*
